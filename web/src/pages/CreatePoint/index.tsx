@@ -1,5 +1,5 @@
 import React, { useEffect, useState, ChangeEvent, FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
 import { Map, TileLayer, Marker } from  'react-leaflet';
 import axios from 'axios';
@@ -35,7 +35,7 @@ const CreatePoint = () => {
     const [formData, setFormData] = useState({
         name:'',
         email:'',
-        Whatsapp:'',
+        whatsapp:'',
         
     });
     
@@ -43,6 +43,8 @@ const CreatePoint = () => {
     const [selectedCity, setSelectedCity] = useState('0');
     const [selectedItems, setSelectedItems] = useState<number[]>([]);
     const [selectedPosition, setSelectedPosition] = useState<[number, number]>([0, 0]);
+
+    const history = useHistory();
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(position => {
@@ -121,7 +123,7 @@ const CreatePoint = () => {
     async function handdleSubmit(event: FormEvent) {
         event.preventDefault();
 
-        const { name, email, Whatsapp } = formData;
+        const { name, email, whatsapp } = formData;
         const uf = selectedUf;
         const city = selectedCity;
         const [latitude, longitude] = selectedPosition;
@@ -130,7 +132,7 @@ const CreatePoint = () => {
         const data = {
             name,
             email,
-            Whatsapp,
+            whatsapp,
             uf,
             city,
             latitude,
@@ -139,10 +141,11 @@ const CreatePoint = () => {
         };
 
         await api.post('points', data);
-        alert('Ponto de coleta criado!')
+        alert('Ponto de coleta criado!');
+
+        history.push('/');
 
     };
-
 
     return (
         <div id="page-create-point">
@@ -183,11 +186,11 @@ const CreatePoint = () => {
                             />
                         </div>
                         <div className="field">
-                            <label htmlFor="Whatsapp">Whatsapp</label>
+                            <label htmlFor="whatsapp">whatsapp</label>
                             <input 
                                 type="text"
-                                name= "Whatsapp"
-                                id="Whatsapp"
+                                name= "whatsapp"
+                                id="whatsapp"
                                 onChange={handleInputChange}
                             />
                         </div>
@@ -251,11 +254,7 @@ const CreatePoint = () => {
 
                     <ul className="items-grid">
                         {items.map(item => (
-                        <li 
-                            key={item.id} 
-                            onClick={() => handleSelectItem(item.id)} 
-                            className={selectedItems.includes(item.id) ? 'selected': ''}
-                        >
+                        <li key={item.id} onClick={() => handleSelectItem(item.id)} className={selectedItems.includes(item.id) ? 'selected': ''}          >
                             <img src={item.image_url} alt={item.title}/>
                             <span>{item.title}</span>
                         </li>
